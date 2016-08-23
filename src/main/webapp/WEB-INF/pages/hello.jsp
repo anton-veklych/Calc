@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<link href="/resources/css/style.css" rel="stylesheet">
+    <script src="/resources/js/jquery-3.1.0.js" type="text/javascript"></script>
+	<script type="text/javascript">
+
+		var inputNumber = "";
+		var historyDisplay = "";
+		var doResult = 0;
+
+
+		function operation(d){
+			if(historyDisplay == ""){
+				historyDisplay = historyDisplay + inputNumber + "|" + d + "|" ;
+			} else {
+				historyDisplay = historyDisplay + inputNumber +"|"+ d +"|";
+			}
+			inputNumber = "";
+			doResult = 1;
+		}
+
+		function getButton(n){
+			inputNumber = inputNumber + n;
+			$(".result_text").val(inputNumber);
+			doResult = 0;
+		}
+
+		function doAjax(){
+
+			if(doResult == 0) {
+				historyDisplay = historyDisplay + inputNumber;
+				$.ajax({
+					url: "/getCharNum",
+					type: "GET",
+					dataType: "json",
+					data: ({
+						text: historyDisplay
+					}),
+					success: function (resp) {
+						var result = resp.result;
+						$(".result_text").val(result);
+
+					}
+				});
+			}
+		}
+
+		function clear(){
+			$(".result_text").val("0");
+			inputNumber = "";
+			historyDisplay = "";
+			doResult = 0;
+		}
+	</script>
+
+</head>
+<body>
+<h1 id="hi">${message}</h1>
+
+<div>
+	    <form onsubmit="return false;">
+		<table>
+			<tr><input type="text" class="result_text"></tr>
+			<tr> <td><button onclick="getButton('1')">1</button></td> <td><button onclick="getButton('2')">2</button></td> <td><button onclick="getButton('3')">3</button></td> <td><button onclick="operation('+')" )>+</button></td> </tr>
+			<tr> <td><button onclick="getButton('4')">4</button></td> <td><button onclick="getButton('5')">5</button></td> <td><button onclick="getButton('6')">6</button></td> <td><button onclick="operation('-')">-</button></td> </tr>
+			<tr> <td><button onclick="getButton('7')">7</button></td> <td><button onclick="getButton('8')">8</button></td> <td><button onclick="getButton('9')">9</button></td> <td><button onclick="operation('*')">*</button></td>  </tr>
+			<tr> <td><button onclick="clear()">C</button></td> <td><button onclick="getButton('0')">0</button></td> <td><button onclick="getButton('.')">.</button></td> <td><button onclick="operation('/')">/</button></td>  </tr>
+			<tr> <td> <button  onclick="doAjax()">=</button> </td> </tr>
+		</table>
+			</form>
+</div>
+</body>
+</html>
